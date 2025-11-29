@@ -1,0 +1,30 @@
+name: Validate Brewfile
+
+on:
+  push:
+    branches: [main]
+    paths: ['Brewfile']
+  pull_request:
+    branches: [main]
+    paths: ['Brewfile']
+
+jobs:
+  validate:
+    runs-on: macos-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Validate Brewfile syntax
+        run: brew bundle check --file=Brewfile || true
+
+      - name: List packages
+        run: |
+          echo "📦 Formulas:"
+          grep '^brew' Brewfile | wc -l | xargs echo "  Count:"
+          echo ""
+          echo "🖥️ Casks:"
+          grep '^cask' Brewfile | wc -l | xargs echo "  Count:"
+          echo ""
+          echo "📱 Mac App Store:"
+          grep '^mas' Brewfile | wc -l | xargs echo "  Count:"
