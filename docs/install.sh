@@ -153,6 +153,7 @@ $(gum style --faint '  macOS dev environment in one command')
   $BULLET Check for Homebrew
   $BULLET Download Brewfile to ~/.Brewfile
   $BULLET Install all packages
+  $BULLET Configure dotfiles with chezmoi (optional)
 "
 }
 
