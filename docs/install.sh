@@ -114,7 +114,7 @@ setup_gum() {
 # Initialize UI variables (requires gum)
 init_ui() {
     BULLET=$(gum style --foreground "$COLOR_BREW" '•')
-    CHECK=$(gum style --foreground "$COLOR_SUCCESS" '✓')
+    CHECK="🍺"
 }
 
 # Display success message
@@ -162,9 +162,8 @@ $(gum style --faint '  macOS dev environment in one command')
 # -----------------------------------------------------------------------------
 
 install_brewfile() {
-    gum spin --spinner dot --title "  Downloading Brewfile..." -- \
-        curl -fsSL "$REPO_URL" -o "$BREWFILE_PATH"
-    ui_success "Saved to $BREWFILE_PATH"
+    curl -fsSL "$REPO_URL" -o "$BREWFILE_PATH" &
+    spin $! "Downloading Brewfile..." 1
 }
 
 install_packages() {
@@ -225,9 +224,8 @@ main() {
 
     if gum confirm "  Configure your shell with dotfiles?"; then
         gum style ""
-        gum spin --spinner dot --title "  Installing dotfiles..." -- \
-            chezmoi init --apply "$GITHUB_USER"
-        ui_success "Dotfiles applied"
+        chezmoi init --apply "$GITHUB_USER" &>/dev/null &
+        spin $! "Applying dotfiles..." 1
     fi
 
     ui_footer
