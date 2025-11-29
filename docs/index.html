@@ -28,6 +28,71 @@
             --transition-normal: 0.3s ease;
         }
 
+        /* Light mode */
+        [data-theme="light"] {
+            --color-dark: #f8f8fa;
+            --color-darker: #eeeef2;
+            --color-light: #1d1d1f;
+            --color-muted: #86868b;
+            --color-border: #d2d2d7;
+        }
+
+        [data-theme="light"] .terminal,
+        [data-theme="light"] .brewfile {
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        }
+
+        [data-theme="light"] .terminal__header,
+        [data-theme="light"] .brewfile__header {
+            background: linear-gradient(180deg, #e8e8ec 0%, #dcdce0 100%);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+        }
+
+        [data-theme="light"] .terminal__title,
+        [data-theme="light"] .brewfile__title,
+        [data-theme="light"] .brewfile__link {
+            background: rgba(255, 255, 255, 0.6);
+            border-color: rgba(0, 0, 0, 0.08);
+            color: #1d1d1f;
+        }
+
+        [data-theme="light"] .terminal__btn--red { background: #ff5f56; box-shadow: none; }
+        [data-theme="light"] .terminal__btn--yellow { background: #ffbd2e; box-shadow: none; }
+        [data-theme="light"] .terminal__btn--green { background: #27ca40; box-shadow: none; }
+        [data-theme="light"] .brewfile__btn--red { background: #ff5f56; box-shadow: none; }
+        [data-theme="light"] .brewfile__btn--yellow { background: #ffbd2e; box-shadow: none; }
+        [data-theme="light"] .brewfile__btn--green { background: #27ca40; box-shadow: none; }
+
+        [data-theme="light"] .glow-bg { opacity: 0.15; }
+        [data-theme="light"] .bubble { background: var(--color-orange); opacity: 0.06; }
+
+        [data-theme="light"] .terminal__prompt { color: #34a853; text-shadow: none; }
+        [data-theme="light"] .terminal__command { color: #c5600a; }
+        [data-theme="light"] .terminal__cursor { background: #c5600a; box-shadow: none; }
+        [data-theme="light"] .terminal__comment { color: #86868b; }
+
+        [data-theme="light"] .bf-comment { color: #86868b; }
+        [data-theme="light"] .bf-keyword { color: #34a853; }
+        [data-theme="light"] .bf-keyword--cask { color: #1a73e8; }
+        [data-theme="light"] .bf-string { color: #1a73e8; }
+        [data-theme="light"] .bf-string--cask { color: #1d1d1f; }
+        [data-theme="light"] .brewfile__content { color: #1d1d1f; }
+        [data-theme="light"] .bf-section { background: rgba(251, 176, 64, 0.12); color: #c5600a; }
+        [data-theme="light"] .bf-package:hover { background: rgba(0, 0, 0, 0.03); }
+
+        [data-theme="light"] .stat__value { text-shadow: none; }
+        [data-theme="light"] .header__title { background: linear-gradient(135deg, #e8890c, #c5600a, #e8890c); background-size: 200% 200%; background-clip: text; -webkit-background-clip: text; }
+
+        [data-theme="light"] .copy-btn { background: #c5600a; }
+        [data-theme="light"] .copy-btn:hover { box-shadow: 0 0 15px rgba(197, 96, 10, 0.4); }
+
+        [data-theme="light"] .github-ribbon { background: #c5600a; }
+        [data-theme="light"] .github-ribbon:hover { background: #a84d08; }
+
+        [data-theme="light"] .footer a { color: #c5600a; }
+        [data-theme="light"] .footer a::after { background: #c5600a; }
+        [data-theme="light"] .footer a:hover { color: #a84d08; text-shadow: none; }
+
         /* ============================================
            Reset & Base
            ============================================ */
@@ -578,6 +643,50 @@
         .github-ribbon svg { width: 14px; height: 14px; }
 
         /* ============================================
+           Theme Toggle (iOS-style switch)
+           ============================================ */
+        .theme-toggle {
+            position: fixed;
+            top: 16px;
+            left: 16px;
+            z-index: 100;
+            width: 52px;
+            height: 28px;
+            background: #3a3a4a;
+            border: none;
+            border-radius: 14px;
+            cursor: pointer;
+            padding: 0;
+            transition: background 0.3s;
+            backdrop-filter: blur(10px);
+        }
+
+        .theme-toggle::before {
+            content: '';
+            position: absolute;
+            top: 3px;
+            left: 3px;
+            width: 22px;
+            height: 22px;
+            background: #fff;
+            border-radius: 50%;
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .theme-toggle:hover::before {
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        [data-theme="light"] .theme-toggle {
+            background: var(--color-yellow);
+        }
+
+        [data-theme="light"] .theme-toggle::before {
+            transform: translateX(24px);
+        }
+
+        /* ============================================
            Responsive
            ============================================ */
         @media (max-width: 768px) {
@@ -601,6 +710,9 @@
     </style>
 </head>
 <body>
+    <!-- Theme Toggle -->
+    <button class="theme-toggle" id="theme-toggle" aria-label="Toggle theme"></button>
+
     <!-- GitHub Ribbon -->
     <a href="https://github.com/Sbastien/Brewfile" class="github-ribbon" target="_blank" rel="noopener noreferrer">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
@@ -738,7 +850,6 @@
         (() => {
             'use strict';
 
-            // Constants
             const BREWFILE_URL = 'https://raw.githubusercontent.com/Sbastien/Brewfile/main/Brewfile';
             const COPY_FEEDBACK_DURATION = 2000;
 
@@ -873,7 +984,33 @@
                 }
             };
 
+            /**
+             * Toggle theme
+             */
+            const initTheme = () => {
+                const toggle = document.getElementById('theme-toggle');
+                const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+                const saved = localStorage.getItem('theme');
+                const theme = saved ?? (mediaQuery.matches ? 'dark' : 'light');
+
+                document.documentElement.dataset.theme = theme;
+
+                toggle.addEventListener('click', () => {
+                    const current = document.documentElement.dataset.theme;
+                    const next = current === 'dark' ? 'light' : 'dark';
+                    document.documentElement.dataset.theme = next;
+                    localStorage.setItem('theme', next);
+                });
+
+                mediaQuery.addEventListener('change', (e) => {
+                    if (!localStorage.getItem('theme')) {
+                        document.documentElement.dataset.theme = e.matches ? 'dark' : 'light';
+                    }
+                });
+            };
+
             // Initialize
+            initTheme();
             document.addEventListener('click', handleCopyClick);
             loadBrewfile();
         })();

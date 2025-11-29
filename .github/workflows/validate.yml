@@ -2,11 +2,11 @@ name: Validate Brewfile
 
 on:
   push:
-    branches: [main]
-    paths: ['Brewfile']
+    paths:
+      - 'Brewfile'
   pull_request:
-    branches: [main]
-    paths: ['Brewfile']
+    paths:
+      - 'Brewfile'
 
 jobs:
   validate:
@@ -16,15 +16,41 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Validate Brewfile syntax
-        run: brew bundle check --file=Brewfile || true
-
-      - name: List packages
         run: |
-          echo "📦 Formulas:"
-          grep '^brew' Brewfile | wc -l | xargs echo "  Count:"
-          echo ""
-          echo "🖥️ Casks:"
-          grep '^cask' Brewfile | wc -l | xargs echo "  Count:"
-          echo ""
-          echo "📱 Mac App Store:"
-          grep '^mas' Brewfile | wc -l | xargs echo "  Count:"
+          echo "Checking Brewfile syntax..."
+          brew bundle check --file=Brewfile --no-install 2>&1 || true
+
+      - name: Check for duplicate packages
+        run: |
+          echo "Checking for duplicates..."
+          duplicates=$(grep -E '^(brew|cask|tap)\s+"' Brewfile | sort | uniq -d)
+          if [ -n "$duplicates" ]; then
+            echo "::error::Duplicate packages found:"
+            echo "$duplicates"
+            exit 1
+          fi
+          echo "No duplicates found"
+
+      - name: Validate package format
+        run: |
+          echo "Validating format..."
+          missing_comments=$(grep -E '^(brew|cask)\s+"[^"]+"\s*$' Brewfile || true)
+          if [ -n "$missing_comments" ]; then
+            echo "::warning::Packages without descriptions:"
+            echo "$missing_comments"
+          fi
+          echo "Format check complete"
+
+      - name: Count packages
+        run: |
+          brews=$(grep -c '^brew "' Brewfile || echo 0)
+          casks=$(grep -c '^cask "' Brewfile || echo 0)
+          taps=$(grep -c '^tap "' Brewfile || echo 0)
+          fonts=$(grep -c '^cask "font-' Brewfile || echo 0)
+          echo "### Package Summary" >> $GITHUB_STEP_SUMMARY
+          echo "| Type | Count |" >> $GITHUB_STEP_SUMMARY
+          echo "|------|-------|" >> $GITHUB_STEP_SUMMARY
+          echo "| Brews | $brews |" >> $GITHUB_STEP_SUMMARY
+          echo "| Casks | $((casks - fonts)) |" >> $GITHUB_STEP_SUMMARY
+          echo "| Fonts | $fonts |" >> $GITHUB_STEP_SUMMARY
+          echo "| Taps | $taps |" >> $GITHUB_STEP_SUMMARY

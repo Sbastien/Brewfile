@@ -22,7 +22,7 @@
 </p>
 
 <p align="center">
-  <strong>50+ CLI tools · 20+ apps · 4 Nerd Fonts</strong>
+  <strong>50+ CLI tools · 15+ apps · 4 Nerd Fonts</strong>
 </p>
 
 <p align="center">
@@ -63,12 +63,17 @@ This Brewfile installs the tools — my [dotfiles](https://github.com/Sbastien/d
 chezmoi init --apply Sbastien
 ```
 
-## Customize
+## Use as Template
 
-1. Click **Use this template** to create your own repo
-2. Edit the `Brewfile` to add/remove packages
-3. Update `GITHUB_USER` in `docs/install.sh`
-4. Enable GitHub Pages (Settings → Pages → Deploy from branch: `main`, folder: `/docs`)
+1. Click **Use this template** above (keep the repo name `Brewfile`)
+
+2. Replace the username in your clone:
+
+   ```bash
+   sed -i '' "s/Sbastien/$YOUR_USERNAME/g" docs/index.html docs/install.sh
+   ```
+
+3. Edit the `Brewfile` to add/remove packages
 
 <br>
 
