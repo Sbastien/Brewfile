@@ -3,26 +3,69 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="My curated macOS dev environment setup via Homebrew - 50+ CLI tools, 20+ apps, 4 Nerd Fonts">
+    <meta name="theme-color" content="#FBB040">
     <title>Brewfile - macOS Dev Setup</title>
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🍺</text></svg>">
     <style>
+        /* ============================================
+           CSS Variables
+           ============================================ */
         :root {
-            --brew-yellow: #FBB040;
-            --brew-orange: #F5A623;
-            --brew-dark: #1a1a2e;
-            --brew-darker: #0f0f1a;
-            --brew-light: #eaeaea;
-            --brew-green: #4ade80;
+            --color-yellow: #FBB040;
+            --color-orange: #F5A623;
+            --color-dark: #1a1a2e;
+            --color-darker: #0f0f1a;
+            --color-light: #eaeaea;
+            --color-green: #4ade80;
+            --color-blue: #81D4FA;
+            --color-muted: #888;
+            --color-border: #333;
+            --radius-sm: 4px;
+            --radius-md: 6px;
+            --radius-lg: 12px;
+            --transition-fast: 0.15s ease;
+            --transition-normal: 0.3s ease;
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        /* ============================================
+           Reset & Base
+           ============================================ */
+        *, *::before, *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
         body {
             font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
-            background: var(--brew-darker);
-            color: var(--brew-light);
+            background: var(--color-darker);
+            color: var(--color-light);
             min-height: 100vh;
             overflow-x: hidden;
+        }
+
+        /* ============================================
+           Background Effects
+           ============================================ */
+        .glow-bg {
+            position: fixed;
+            inset: -50%;
+            width: 200%;
+            height: 200%;
+            background:
+                radial-gradient(circle at 30% 30%, rgba(251, 176, 64, 0.05) 0%, transparent 50%),
+                radial-gradient(circle at 70% 70%, rgba(245, 166, 35, 0.03) 0%, transparent 50%);
+            animation: glow-move 20s ease-in-out infinite;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        @keyframes glow-move {
+            0%, 100% { transform: translate(0, 0) rotate(0deg); }
+            25% { transform: translate(2%, 2%) rotate(5deg); }
+            50% { transform: translate(-1%, 3%) rotate(-3deg); }
+            75% { transform: translate(3%, -2%) rotate(3deg); }
         }
 
         .bubbles {
@@ -36,10 +79,10 @@
         .bubble {
             position: absolute;
             bottom: -100px;
-            background: var(--brew-yellow);
+            background: var(--color-yellow);
             border-radius: 50%;
             opacity: 0.1;
-            animation: rise 15s infinite ease-in;
+            animation: bubble-rise 15s infinite ease-in;
         }
 
         .bubble:nth-child(1) { width: 40px; height: 40px; left: 10%; animation-duration: 12s; }
@@ -53,56 +96,42 @@
         .bubble:nth-child(9) { width: 15px; height: 15px; left: 5%; animation-duration: 11s; animation-delay: 7s; }
         .bubble:nth-child(10) { width: 30px; height: 30px; left: 45%; animation-duration: 19s; animation-delay: 8s; }
 
-        @keyframes rise {
+        @keyframes bubble-rise {
             0% { bottom: -100px; transform: translateX(0) scale(1); opacity: 0.08; }
             50% { opacity: 0.15; transform: translateX(30px) scale(1.1); }
             100% { bottom: 110%; transform: translateX(-30px) scale(0.3); opacity: 0; }
         }
 
-        .glow-bg {
-            position: fixed;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(circle at 30% 30%, rgba(251, 176, 64, 0.05) 0%, transparent 50%),
-                        radial-gradient(circle at 70% 70%, rgba(245, 166, 35, 0.03) 0%, transparent 50%);
-            animation: glowMove 20s ease-in-out infinite;
-            z-index: 0;
-            pointer-events: none;
-        }
-
-        @keyframes glowMove {
-            0%, 100% { transform: translate(0, 0) rotate(0deg); }
-            25% { transform: translate(2%, 2%) rotate(5deg); }
-            50% { transform: translate(-1%, 3%) rotate(-3deg); }
-            75% { transform: translate(3%, -2%) rotate(3deg); }
-        }
-
+        /* ============================================
+           Layout
+           ============================================ */
         .container {
             max-width: 900px;
-            margin: 0 auto;
+            margin-inline: auto;
             padding: 2rem;
             position: relative;
             z-index: 1;
         }
 
-        header {
+        /* ============================================
+           Header
+           ============================================ */
+        .header {
             text-align: center;
-            padding: 4rem 0;
-            animation: fadeInDown 1s ease-out;
+            padding-block: 4rem;
+            animation: fade-in-down 1s ease-out;
         }
 
-        @keyframes fadeInDown {
+        @keyframes fade-in-down {
             from { opacity: 0; transform: translateY(-30px); }
             to { opacity: 1; transform: translateY(0); }
         }
 
-        .logo {
+        .header__logo {
             font-size: 5rem;
             margin-bottom: 1rem;
-            animation: float 3s ease-in-out infinite;
             display: inline-block;
+            animation: float 3s ease-in-out infinite;
         }
 
         @keyframes float {
@@ -110,82 +139,117 @@
             50% { transform: translateY(-10px) rotate(5deg); }
         }
 
-        h1 {
+        .header__title {
             font-size: 3rem;
-            background: linear-gradient(135deg, var(--brew-yellow), var(--brew-orange), var(--brew-yellow));
+            background: linear-gradient(135deg, var(--color-yellow), var(--color-orange), var(--color-yellow));
             background-size: 200% 200%;
+            background-clip: text;
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            background-clip: text;
             margin-bottom: 0.5rem;
-            animation: gradientShift 3s ease infinite;
+            animation: gradient-shift 3s ease infinite;
         }
 
-        @keyframes gradientShift {
+        @keyframes gradient-shift {
             0%, 100% { background-position: 0% 50%; }
             50% { background-position: 100% 50%; }
         }
 
-        .tagline {
-            color: #888;
+        .header__tagline {
+            color: var(--color-muted);
             font-size: 1.1rem;
-            animation: fadeIn 1s ease-out 0.3s both;
+            animation: fade-in 1s ease-out 0.3s both;
         }
 
-        @keyframes fadeIn {
+        @keyframes fade-in {
             from { opacity: 0; }
             to { opacity: 1; }
         }
 
+        /* ============================================
+           Terminal
+           ============================================ */
         .terminal {
-            background: var(--brew-dark);
-            border-radius: 12px;
-            margin: 2rem 0;
+            background: var(--color-dark);
+            border-radius: var(--radius-lg);
+            margin-block: 2rem;
             overflow: hidden;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5), 0 0 40px rgba(251, 176, 64, 0.1);
-            border: 1px solid #333;
-            animation: slideUp 0.8s ease-out 0.5s both;
-            transition: all 0.3s ease;
+            box-shadow:
+                0 20px 60px rgba(0, 0, 0, 0.5),
+                0 0 40px rgba(251, 176, 64, 0.1);
+            border: 1px solid var(--color-border);
+            animation: slide-up 0.8s ease-out 0.5s both;
+            transition: box-shadow var(--transition-normal), transform var(--transition-normal);
         }
 
         .terminal:hover {
-            box-shadow: 0 25px 80px rgba(0, 0, 0, 0.6), 0 0 60px rgba(251, 176, 64, 0.15);
+            box-shadow:
+                0 25px 80px rgba(0, 0, 0, 0.6),
+                0 0 60px rgba(251, 176, 64, 0.15);
             transform: translateY(-5px);
         }
 
-        @keyframes slideUp {
+        @keyframes slide-up {
             from { opacity: 0; transform: translateY(40px); }
             to { opacity: 1; transform: translateY(0); }
         }
 
-        .terminal-header {
-            background: linear-gradient(180deg, #3a3a4a, #2a2a3a);
-            padding: 12px 16px;
+        .terminal__header {
+            background: rgba(40, 40, 50, 0.7);
+            backdrop-filter: blur(20px) saturate(180%);
+            -webkit-backdrop-filter: blur(20px) saturate(180%);
+            padding: 0 16px;
+            height: 52px;
+            display: flex;
+            align-items: center;
+            position: relative;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .terminal__controls {
             display: flex;
             align-items: center;
             gap: 8px;
         }
 
-        .terminal-btn {
+        .terminal__btn {
             width: 12px;
             height: 12px;
             border-radius: 50%;
+            border: none;
             transition: transform 0.2s;
         }
 
-        .terminal-btn:hover { transform: scale(1.2); }
-        .terminal-btn.red { background: #ff5f56; box-shadow: 0 0 10px #ff5f56; }
-        .terminal-btn.yellow { background: #ffbd2e; box-shadow: 0 0 10px #ffbd2e; }
-        .terminal-btn.green { background: #27ca40; box-shadow: 0 0 10px #27ca40; }
+        .terminal__btn:hover { transform: scale(1.2); }
 
-        .terminal-title {
-            flex: 1;
-            text-align: center;
-            color: #888;
-            font-size: 0.85rem;
+        .terminal__btn--red { background: #ff5f56; box-shadow: 0 0 8px rgba(255, 95, 86, 0.5); }
+        .terminal__btn--yellow { background: #ffbd2e; box-shadow: 0 0 8px rgba(255, 189, 46, 0.5); }
+        .terminal__btn--green { background: #27ca40; box-shadow: 0 0 8px rgba(39, 202, 64, 0.5); }
+
+        .terminal__title {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 14px;
+            background: rgba(255, 255, 255, 0.06);
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 13px;
+            font-weight: 500;
         }
 
-        .terminal-body {
+        .terminal__title-icon {
+            width: 20px;
+            height: 20px;
+            margin: -2px 0;
+        }
+
+        .terminal__body {
             padding: 1.5rem;
             padding-right: 8rem;
             font-size: 0.95rem;
@@ -194,20 +258,19 @@
             position: relative;
         }
 
-        .terminal-body .command { word-break: break-all; }
-        .prompt { color: var(--brew-green); text-shadow: 0 0 10px var(--brew-green); }
-        .command { color: var(--brew-yellow); }
-        .comment { color: #666; }
+        .terminal__prompt { color: var(--color-green); text-shadow: 0 0 10px var(--color-green); }
+        .terminal__command { color: var(--color-yellow); word-break: break-all; }
+        .terminal__comment { color: #666; }
 
-        .cursor {
+        .terminal__cursor {
             display: inline-block;
             width: 10px;
             height: 1.2em;
-            background: var(--brew-yellow);
+            background: var(--color-yellow);
             animation: blink 1s step-end infinite;
             vertical-align: text-bottom;
             margin-left: 4px;
-            box-shadow: 0 0 10px var(--brew-yellow);
+            box-shadow: 0 0 10px var(--color-yellow);
         }
 
         @keyframes blink {
@@ -215,251 +278,340 @@
             50% { opacity: 0; }
         }
 
-        .install-section {
-            margin: 3rem 0;
-            animation: fadeIn 1s ease-out 0.8s both;
-        }
-
-        .install-section h2 {
-            color: var(--brew-yellow);
-            margin-bottom: 1rem;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .install-section h2::before {
-            content: '';
-            display: inline-block;
-            width: 4px;
-            height: 1.2em;
-            background: var(--brew-yellow);
-            border-radius: 2px;
-            animation: pulse 2s ease-in-out infinite;
-        }
-
-        @keyframes pulse {
-            0%, 100% { opacity: 1; box-shadow: 0 0 10px var(--brew-yellow); }
-            50% { opacity: 0.5; box-shadow: 0 0 20px var(--brew-yellow); }
-        }
-
-        .code-block {
-            background: var(--brew-dark);
-            border: 1px solid #333;
-            border-radius: 8px;
-            padding: 1rem 1.5rem;
-            padding-right: 8rem;
-            margin: 1rem 0;
-            position: relative;
-            overflow-x: auto;
-            transition: all 0.3s ease;
-        }
-
-        .code-block:hover {
-            border-color: var(--brew-yellow);
-            box-shadow: 0 0 20px rgba(251, 176, 64, 0.1);
-        }
-
-        .code-block code {
-            color: var(--brew-green);
-            font-size: 0.9rem;
-        }
-
+        /* ============================================
+           Copy Button
+           ============================================ */
         .copy-btn {
             position: absolute;
             top: 50%;
             transform: translateY(-50%);
             right: 12px;
-            background: var(--brew-yellow);
-            color: var(--brew-darker);
+            background: var(--color-yellow);
+            color: var(--color-darker);
             border: none;
             padding: 6px 12px;
-            border-radius: 4px;
+            border-radius: var(--radius-sm);
             cursor: pointer;
             font-family: inherit;
             font-size: 0.8rem;
             font-weight: bold;
-            transition: box-shadow 0.3s ease, background 0.3s ease;
+            transition: box-shadow var(--transition-normal), background var(--transition-normal);
             white-space: nowrap;
         }
 
         .copy-btn:hover { box-shadow: 0 0 25px rgba(251, 176, 64, 0.6); }
-        .copy-btn.copied { background: var(--brew-orange); }
+        .copy-btn--copied { background: var(--color-orange); }
 
-        .terminal-copy {
-            position: absolute;
-            top: 50%;
-            transform: translateY(-50%);
-            right: 12px;
-        }
-
-        .packages { margin: 3rem 0; }
-        .packages h2 { color: var(--brew-yellow); margin-bottom: 1.5rem; }
-
-        .brewfile-container {
-            background: var(--brew-dark);
-            border: 1px solid #333;
-            border-radius: 12px;
-            overflow: hidden;
-            animation: fadeInUp 0.6s ease-out both;
-            transition: all 0.3s ease;
-        }
-
-        .brewfile-container:hover {
-            border-color: var(--brew-yellow);
-            box-shadow: 0 0 30px rgba(251, 176, 64, 0.1);
-        }
-
-        .brewfile-header {
-            background: linear-gradient(180deg, #3a3a4a, #2a2a3a);
-            padding: 12px 16px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            border-bottom: 1px solid #333;
-        }
-
-        .brewfile-icon { font-size: 1.2rem; }
-
-        .brewfile-title {
-            color: #888;
-            font-size: 0.9rem;
-            flex: 1;
-        }
-
-        .brewfile-link {
-            color: var(--brew-yellow);
-            text-decoration: none;
-            font-size: 0.8rem;
-            opacity: 0.8;
-            transition: opacity 0.2s;
-        }
-
-        .brewfile-link:hover { opacity: 1; }
-
-        .brewfile-content {
-            padding: 1.5rem;
-            margin: 0;
-            max-height: 500px;
-            overflow-y: auto;
-            font-size: 0.85rem;
-            line-height: 1.6;
-            color: #ccc;
-        }
-
-        .brewfile-content::-webkit-scrollbar { width: 8px; }
-        .brewfile-content::-webkit-scrollbar-track { background: var(--brew-darker); }
-        .brewfile-content::-webkit-scrollbar-thumb { background: #444; border-radius: 4px; }
-        .brewfile-content::-webkit-scrollbar-thumb:hover { background: var(--brew-yellow); }
-
-        .brewfile-content .comment { color: #666; }
-        .brewfile-content .section { color: var(--brew-yellow); font-weight: bold; }
-        .brewfile-content .keyword { color: var(--brew-green); }
-        .brewfile-content .string { color: #81D4FA; }
-        .brewfile-content .inline-comment { color: #666; }
-
-        @keyframes fadeInUp {
-            from { opacity: 0; transform: translateY(30px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
+        /* ============================================
+           Stats
+           ============================================ */
         .stats {
             display: flex;
             justify-content: center;
             gap: 3rem;
-            margin: 3rem 0;
+            margin-block: 3rem;
             flex-wrap: wrap;
         }
 
         .stat {
             text-align: center;
-            animation: scaleIn 0.5s ease-out both;
+            animation: scale-in 0.5s ease-out both;
         }
 
         .stat:nth-child(1) { animation-delay: 0.7s; }
         .stat:nth-child(2) { animation-delay: 0.8s; }
         .stat:nth-child(3) { animation-delay: 0.9s; }
 
-        @keyframes scaleIn {
+        @keyframes scale-in {
             from { opacity: 0; transform: scale(0.5); }
             to { opacity: 1; transform: scale(1); }
         }
 
-        .stat-value {
+        .stat__value {
             font-size: 2.5rem;
             font-weight: bold;
-            color: var(--brew-yellow);
+            color: var(--color-yellow);
             display: block;
             text-shadow: 0 0 20px rgba(251, 176, 64, 0.5);
-            animation: countPulse 2s ease-in-out infinite;
+            animation: pulse 2s ease-in-out infinite;
         }
 
-        @keyframes countPulse {
+        @keyframes pulse {
             0%, 100% { text-shadow: 0 0 20px rgba(251, 176, 64, 0.5); }
             50% { text-shadow: 0 0 30px rgba(251, 176, 64, 0.8); }
         }
 
-        .stat-label { color: #666; font-size: 0.9rem; }
+        .stat__label { color: #666; font-size: 0.9rem; }
 
-        footer {
-            text-align: center;
-            padding: 3rem 0;
-            color: #666;
-            border-top: 1px solid #333;
-            margin-top: 3rem;
-            animation: fadeIn 1s ease-out 1.2s both;
+        /* ============================================
+           Sections
+           ============================================ */
+        .section {
+            margin-block: 3rem;
+            animation: fade-in 1s ease-out 0.8s both;
         }
 
-        footer a {
-            color: var(--brew-yellow);
+        .section__title {
+            color: var(--color-yellow);
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .section__icon {
+            width: 1.2em;
+            height: 1.2em;
+            vertical-align: -0.15em;
+            margin-right: 0.3em;
+        }
+
+        .section__label { color: var(--color-muted); margin-bottom: 1rem; }
+
+        /* ============================================
+           Brewfile Container
+           ============================================ */
+        .brewfile {
+            background: var(--color-dark);
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            animation: fade-in-up 0.6s ease-out both;
+            transition: border-color var(--transition-normal), box-shadow var(--transition-normal);
+        }
+
+        .brewfile:hover {
+            border-color: var(--color-yellow);
+            box-shadow: 0 0 30px rgba(251, 176, 64, 0.1);
+        }
+
+        @keyframes fade-in-up {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .brewfile__header {
+            background: rgba(40, 40, 50, 0.7);
+            backdrop-filter: blur(20px) saturate(180%);
+            -webkit-backdrop-filter: blur(20px) saturate(180%);
+            padding: 0 16px;
+            height: 52px;
+            display: flex;
+            align-items: center;
+            position: relative;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .brewfile__title {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 14px;
+            background: rgba(255, 255, 255, 0.06);
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        .brewfile__title::before {
+            content: '🍺';
+            font-size: 12px;
+        }
+
+        .brewfile__controls {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .brewfile__btn {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+
+        .brewfile__btn--red { background: #ff5f56; box-shadow: 0 0 8px rgba(255, 95, 86, 0.5); }
+        .brewfile__btn--yellow { background: #ffbd2e; box-shadow: 0 0 8px rgba(255, 189, 46, 0.5); }
+        .brewfile__btn--green { background: #27ca40; box-shadow: 0 0 8px rgba(39, 202, 64, 0.5); }
+
+        .brewfile__link {
+            position: absolute;
+            right: 16px;
+            color: rgba(255, 255, 255, 0.5);
             text-decoration: none;
-            transition: all 0.3s ease;
+            font-size: 12px;
+            padding: 4px 10px;
+            background: rgba(255, 255, 255, 0.06);
+            border-radius: 6px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            transition: color 0.2s, background 0.2s;
+        }
+
+        .brewfile__link:hover {
+            color: var(--color-yellow);
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .brewfile__content {
+            padding: 1.5rem;
+            margin: 0;
+            max-height: 500px;
+            overflow-y: auto;
+            scroll-behavior: smooth;
+            font-size: 0.85rem;
+            line-height: 1;
+            color: #ccc;
+        }
+
+        .brewfile__content::-webkit-scrollbar { width: 8px; }
+        .brewfile__content::-webkit-scrollbar-track { background: var(--color-darker); }
+        .brewfile__content::-webkit-scrollbar-thumb { background: #444; border-radius: var(--radius-sm); }
+        .brewfile__content::-webkit-scrollbar-thumb:hover { background: var(--color-yellow); }
+
+        /* Brewfile syntax highlighting */
+        .bf-section {
+            color: var(--color-yellow);
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 0.5em;
+            margin-top: 1.2em;
+            margin-bottom: 0.2em;
+            background: rgba(251, 176, 64, 0.08);
+            margin-inline: -1rem;
+            padding: 0.4em 1rem;
+            border-radius: var(--radius-sm);
+        }
+
+        .bf-section:first-child { margin-top: 0; }
+
+        .bf-package {
+            display: block;
+            padding: 0.35em 0.75em;
+            margin-inline: -0.75em;
+            border-radius: var(--radius-md);
+            transition: background var(--transition-fast), box-shadow var(--transition-fast);
+        }
+
+        .bf-package:hover {
+            background: rgba(255, 255, 255, 0.04);
+            box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.06);
+        }
+
+        .bf-keyword { color: var(--color-green); }
+        .bf-keyword--cask { color: var(--color-blue); }
+        .bf-string { color: var(--color-blue); }
+        .bf-string--cask { color: var(--color-light); }
+        .bf-comment { color: #666; }
+
+        .bf-icon {
+            width: 1em;
+            height: 1em;
+            vertical-align: -0.1em;
+            flex-shrink: 0;
+        }
+
+        /* ============================================
+           Footer
+           ============================================ */
+        .footer {
+            text-align: center;
+            padding-block: 3rem;
+            color: #666;
+            border-top: 1px solid var(--color-border);
+            margin-top: 3rem;
+            animation: fade-in 1s ease-out 1.2s both;
+        }
+
+        .footer a {
+            color: var(--color-yellow);
+            text-decoration: none;
+            transition: color var(--transition-normal), text-shadow var(--transition-normal);
             position: relative;
         }
 
-        footer a::after {
+        .footer a::after {
             content: '';
             position: absolute;
             bottom: -2px;
             left: 0;
             width: 0;
             height: 2px;
-            background: var(--brew-yellow);
-            transition: width 0.3s ease;
+            background: var(--color-yellow);
+            transition: width var(--transition-normal);
         }
 
-        footer a:hover::after { width: 100%; }
-        footer a:hover { color: var(--brew-orange); text-shadow: 0 0 10px var(--brew-yellow); }
+        .footer a:hover::after { width: 100%; }
+        .footer a:hover { color: var(--color-orange); text-shadow: 0 0 10px var(--color-yellow); }
 
-        .label { color: #888; margin-bottom: 1rem; }
-        .label-spacing { margin: 1.5rem 0 1rem; }
+        .footer__credit { margin-top: 0.5rem; }
 
+        /* ============================================
+           GitHub Ribbon
+           ============================================ */
+        .github-ribbon {
+            position: fixed;
+            top: 24px;
+            right: -40px;
+            background: var(--color-yellow);
+            color: var(--color-darker);
+            padding: 8px 50px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            text-decoration: none;
+            transform: rotate(45deg);
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+            transition: background 0.2s;
+        }
+
+        .github-ribbon:hover { background: var(--color-orange); }
+        .github-ribbon svg { width: 14px; height: 14px; }
+
+        /* ============================================
+           Responsive
+           ============================================ */
         @media (max-width: 768px) {
             .container { padding: 1rem; }
-            h1 { font-size: 2.5rem; }
-            .logo { font-size: 4rem; }
-            header { padding: 2rem 0; }
+            .header__title { font-size: 2.5rem; }
+            .header__logo { font-size: 4rem; }
+            .header { padding-block: 2rem; }
             .stats { gap: 2rem; }
-            .stat-value { font-size: 2rem; }
+            .stat__value { font-size: 2rem; }
         }
 
         @media (max-width: 600px) {
-            h1 { font-size: 2rem; }
-            .logo { font-size: 3rem; }
-            .tagline { font-size: 0.95rem; }
-            .terminal-body { font-size: 0.75rem; padding: 1rem; }
-            .terminal-copy { position: static; display: block; margin-top: 1rem; transform: none; width: 100%; }
-            .code-block { padding: 1rem; }
-            .code-block code { font-size: 0.75rem; display: block; margin-bottom: 0.75rem; }
-            .code-block .copy-btn { position: static; display: block; transform: none; width: 100%; margin-top: 0.5rem; }
+            .header__title { font-size: 2rem; }
+            .header__logo { font-size: 3rem; }
+            .header__tagline { font-size: 0.95rem; }
+            .terminal__body { font-size: 0.75rem; padding: 1rem; }
+            .terminal__body .copy-btn { position: static; display: block; margin-top: 1rem; width: 100%; }
             .stats { gap: 1.5rem; }
-            .stat-value { font-size: 1.8rem; }
+            .stat__value { font-size: 1.8rem; }
         }
     </style>
 </head>
 <body>
-    <div class="glow-bg"></div>
-    <div class="bubbles">
+    <!-- GitHub Ribbon -->
+    <a href="https://github.com/Sbastien/Brewfile" class="github-ribbon" target="_blank" rel="noopener noreferrer">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <path fill-rule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" clip-rule="evenodd"/>
+        </svg>
+        GitHub
+    </a>
+
+    <!-- Background Effects -->
+    <div class="glow-bg" aria-hidden="true"></div>
+    <div class="bubbles" aria-hidden="true">
         <div class="bubble"></div>
         <div class="bubble"></div>
         <div class="bubble"></div>
@@ -472,117 +624,259 @@
         <div class="bubble"></div>
     </div>
 
-    <div class="container">
-        <header>
-            <div class="logo">🍺</div>
-            <h1>Brewfile</h1>
-            <p class="tagline">My curated macOS dev setup via Homebrew</p>
+    <main class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header__logo" aria-hidden="true">🍺</div>
+            <h1 class="header__title">Brewfile</h1>
+            <p class="header__tagline">My curated macOS dev setup via Homebrew</p>
         </header>
 
+        <!-- Main Install Command -->
         <div class="terminal">
-            <div class="terminal-header">
-                <div class="terminal-btn red"></div>
-                <div class="terminal-btn yellow"></div>
-                <div class="terminal-btn green"></div>
-                <span class="terminal-title">Terminal — zsh</span>
-            </div>
-            <div class="terminal-body">
-                <span class="comment"># Install everything with one command</span><br>
-                <span class="prompt">❯</span> <span class="command">bash &lt;(curl -fsSL https://sbastien.github.io/Brewfile/install.sh)</span><span class="cursor"></span>
-                <button class="copy-btn terminal-copy" onclick="copyCode(this)">Copy</button>
-            </div>
-        </div>
-
-        <div class="stats">
-            <div class="stat">
-                <span class="stat-value">50+</span>
-                <span class="stat-label">CLI Tools</span>
-            </div>
-            <div class="stat">
-                <span class="stat-value">20+</span>
-                <span class="stat-label">Apps</span>
-            </div>
-            <div class="stat">
-                <span class="stat-value">4</span>
-                <span class="stat-label">Nerd Fonts</span>
-            </div>
-        </div>
-
-        <section class="install-section">
-            <h2>Quick Install</h2>
-            <p class="label">Interactive installer:</p>
-            <div class="code-block">
-                <code>bash &lt;(curl -fsSL https://sbastien.github.io/Brewfile/install.sh)</code>
-                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
-            </div>
-            <p class="label label-spacing">Or direct one-liner:</p>
-            <div class="code-block">
-                <code>curl -fsSL https://raw.githubusercontent.com/Sbastien/Brewfile/main/Brewfile | brew bundle --file=-</code>
-                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
-            </div>
-        </section>
-
-        <section class="packages">
-            <h2>📦 What's Included</h2>
-            <div class="brewfile-container">
-                <div class="brewfile-header">
-                    <span class="brewfile-icon">🍺</span>
-                    <span class="brewfile-title">Brewfile</span>
-                    <a href="https://github.com/Sbastien/Brewfile/blob/main/Brewfile" class="brewfile-link" target="_blank">View on GitHub →</a>
+            <div class="terminal__header">
+                <div class="terminal__controls">
+                    <span class="terminal__btn terminal__btn--red"></span>
+                    <span class="terminal__btn terminal__btn--yellow"></span>
+                    <span class="terminal__btn terminal__btn--green"></span>
                 </div>
-                <pre class="brewfile-content" id="brewfile-content">Loading...</pre>
+                <span class="terminal__title">
+                    <svg class="terminal__title-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="m6.75 7.5 3 2.25-3 2.25m4.5 0h3m-9 8.25h13.5A2.25 2.25 0 0 0 21 18V6a2.25 2.25 0 0 0-2.25-2.25H5.25A2.25 2.25 0 0 0 3 6v12a2.25 2.25 0 0 0 2.25 2.25Z"/>
+                    </svg>
+                    Terminal — zsh
+                </span>
+            </div>
+            <div class="terminal__body">
+                <span class="terminal__comment"># Install everything with one command</span><br>
+                <span class="terminal__prompt">❯</span>
+                <span class="terminal__command" data-command="bash <(curl -fsSL https://sbastien.github.io/Brewfile/install.sh)">bash &lt;(curl -fsSL https://sbastien.github.io/Brewfile/install.sh)</span><span class="terminal__cursor"></span>
+                <button type="button" class="copy-btn" aria-label="Copy command">Copy</button>
+            </div>
+        </div>
+
+        <!-- Stats -->
+        <div class="stats" role="list" aria-label="Package statistics">
+            <div class="stat" role="listitem">
+                <span class="stat__value" id="stat-brews">--</span>
+                <span class="stat__label">CLI Tools</span>
+            </div>
+            <div class="stat" role="listitem">
+                <span class="stat__value" id="stat-casks">--</span>
+                <span class="stat__label">Apps</span>
+            </div>
+            <div class="stat" role="listitem">
+                <span class="stat__value" id="stat-fonts">--</span>
+                <span class="stat__label">Nerd Fonts</span>
+            </div>
+        </div>
+
+        <!-- Alternative Install -->
+        <section class="section">
+            <h2 class="section__title">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="section__icon" aria-hidden="true">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="m6.75 7.5 3 2.25-3 2.25m4.5 0h3m-9 8.25h13.5A2.25 2.25 0 0 0 21 18V6a2.25 2.25 0 0 0-2.25-2.25H5.25A2.25 2.25 0 0 0 3 6v12a2.25 2.25 0 0 0 2.25 2.25Z"/>
+                </svg>
+                Alternative
+            </h2>
+            <p class="section__label">Direct one-liner (requires Homebrew):</p>
+            <div class="terminal">
+                <div class="terminal__header">
+                    <div class="terminal__controls">
+                        <span class="terminal__btn terminal__btn--red"></span>
+                        <span class="terminal__btn terminal__btn--yellow"></span>
+                        <span class="terminal__btn terminal__btn--green"></span>
+                    </div>
+                    <span class="terminal__title">
+                        <svg class="terminal__title-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="m6.75 7.5 3 2.25-3 2.25m4.5 0h3m-9 8.25h13.5A2.25 2.25 0 0 0 21 18V6a2.25 2.25 0 0 0-2.25-2.25H5.25A2.25 2.25 0 0 0 3 6v12a2.25 2.25 0 0 0 2.25 2.25Z"/>
+                        </svg>
+                        Terminal — zsh
+                    </span>
+                </div>
+                <div class="terminal__body">
+                    <span class="terminal__prompt">❯</span>
+                    <span class="terminal__command" data-command="curl -fsSL https://raw.githubusercontent.com/Sbastien/Brewfile/main/Brewfile | brew bundle --file=-">curl -fsSL https://raw.githubusercontent.com/Sbastien/Brewfile/main/Brewfile | brew bundle --file=-</span><span class="terminal__cursor"></span>
+                    <button type="button" class="copy-btn" aria-label="Copy command">Copy</button>
+                </div>
             </div>
         </section>
 
-        <footer>
-            <p><a href="https://github.com/Sbastien/Brewfile">GitHub</a> · <a href="https://github.com/Sbastien/Brewfile/blob/main/LICENSE">MIT License</a></p>
-            <p style="margin-top: 0.5rem;">Made with 🍺 by Sbastien</p>
+        <!-- Brewfile Content -->
+        <section class="section">
+            <h2 class="section__title">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="section__icon" aria-hidden="true">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="m21 7.5-9-5.25L3 7.5m18 0-9 5.25m9-5.25v9l-9 5.25M3 7.5l9 5.25M3 7.5v9l9 5.25m0-9v9"/>
+                </svg>
+                What's Included
+            </h2>
+            <div class="brewfile">
+                <div class="brewfile__header">
+                    <div class="brewfile__controls">
+                        <span class="brewfile__btn brewfile__btn--red"></span>
+                        <span class="brewfile__btn brewfile__btn--yellow"></span>
+                        <span class="brewfile__btn brewfile__btn--green"></span>
+                    </div>
+                    <span class="brewfile__title">Brewfile</span>
+                    <a href="https://github.com/Sbastien/Brewfile/blob/main/Brewfile" class="brewfile__link" target="_blank" rel="noopener noreferrer">View on GitHub →</a>
+                </div>
+                <pre class="brewfile__content" id="brewfile-content">Loading...</pre>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p>
+                <a href="https://github.com/Sbastien/Brewfile">GitHub</a> ·
+                <a href="https://github.com/Sbastien/Brewfile/blob/main/LICENSE">MIT License</a>
+            </p>
+            <p class="footer__credit">Made with 🍺 by Sbastien</p>
         </footer>
-    </div>
+    </main>
 
     <script>
-        function copyCode(btn) {
-            const code = btn.classList.contains('terminal-copy')
-                ? btn.parentElement.querySelector('.command').textContent
-                : btn.previousElementSibling.textContent;
-            navigator.clipboard.writeText(code).then(() => {
-                btn.innerHTML = '🍺 Copied!';
-                btn.classList.add('copied');
-                setTimeout(() => {
-                    btn.textContent = 'Copy';
-                    btn.classList.remove('copied');
-                }, 2000);
+        (() => {
+            'use strict';
+
+            // Constants
+            const BREWFILE_URL = 'https://raw.githubusercontent.com/Sbastien/Brewfile/main/Brewfile';
+            const COPY_FEEDBACK_DURATION = 2000;
+
+            // Icon SVGs for Brewfile sections
+            const ICONS = Object.freeze({
+                cog: '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="bf-icon"><path stroke-linecap="round" stroke-linejoin="round" d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.325.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 0 1 1.37.49l1.296 2.247a1.125 1.125 0 0 1-.26 1.431l-1.003.827c-.293.241-.438.613-.43.992a7.723 7.723 0 0 1 0 .255c-.008.378.137.75.43.991l1.004.827c.424.35.534.955.26 1.43l-1.298 2.247a1.125 1.125 0 0 1-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.47 6.47 0 0 1-.22.128c-.331.183-.581.495-.644.869l-.213 1.281c-.09.543-.56.94-1.11.94h-2.594c-.55 0-1.019-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 0 1-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 0 1-1.369-.49l-1.297-2.247a1.125 1.125 0 0 1 .26-1.431l1.004-.827c.292-.24.437-.613.43-.991a6.932 6.932 0 0 1 0-.255c.007-.38-.138-.751-.43-.992l-1.004-.827a1.125 1.125 0 0 1-.26-1.43l1.297-2.247a1.125 1.125 0 0 1 1.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.086.22-.128.332-.183.582-.495.644-.869l.214-1.28Z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/></svg>',
+                link: '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="bf-icon"><path stroke-linecap="round" stroke-linejoin="round" d="M13.19 8.688a4.5 4.5 0 0 1 1.242 7.244l-4.5 4.5a4.5 4.5 0 0 1-6.364-6.364l1.757-1.757m13.35-.622 1.757-1.757a4.5 4.5 0 0 0-6.364-6.364l-4.5 4.5a4.5 4.5 0 0 0 1.242 7.244"/></svg>',
+                terminal: '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="bf-icon"><path stroke-linecap="round" stroke-linejoin="round" d="m6.75 7.5 3 2.25-3 2.25m4.5 0h3m-9 8.25h13.5A2.25 2.25 0 0 0 21 18V6a2.25 2.25 0 0 0-2.25-2.25H5.25A2.25 2.25 0 0 0 3 6v12a2.25 2.25 0 0 0 2.25 2.25Z"/></svg>',
+                code: '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="bf-icon"><path stroke-linecap="round" stroke-linejoin="round" d="M17.25 6.75 22.5 12l-5.25 5.25m-10.5 0L1.5 12l5.25-5.25m7.5-3-4.5 16.5"/></svg>',
+                wrench: '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="bf-icon"><path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75a4.5 4.5 0 0 1-4.884 4.484c-1.076-.091-2.264.071-2.95.904l-7.152 8.684a2.548 2.548 0 1 1-3.586-3.586l8.684-7.152c.833-.686.995-1.874.904-2.95a4.5 4.5 0 0 1 6.336-4.486l-3.276 3.276a3.004 3.004 0 0 0 2.25 2.25l3.276-3.276c.256.565.398 1.192.398 1.852Z"/></svg>',
+                git: '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="bf-icon"><path stroke-linecap="round" stroke-linejoin="round" d="M17.25 6.75 22.5 12l-5.25 5.25m-10.5 0L1.5 12l5.25-5.25m7.5-3-4.5 16.5"/></svg>',
+                shield: '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="bf-icon"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75m-3-7.036A11.959 11.959 0 0 1 3.598 6 11.99 11.99 0 0 0 3 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285Z"/></svg>',
+                tools: '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="bf-icon"><path stroke-linecap="round" stroke-linejoin="round" d="M11.42 15.17 17.25 21A2.652 2.652 0 0 0 21 17.25l-5.877-5.877M11.42 15.17l2.496-3.03c.317-.384.74-.626 1.208-.766M11.42 15.17l-4.655 5.653a2.548 2.548 0 1 1-3.586-3.586l6.837-5.63m5.108-.233c.55-.164 1.163-.188 1.743-.14a4.5 4.5 0 0 0 4.486-6.336l-3.276 3.277a3.004 3.004 0 0 1-2.25-2.25l3.276-3.276a4.5 4.5 0 0 0-6.336 4.486c.091 1.076-.071 2.264-.904 2.95l-.102.085m-1.745 1.437L5.909 7.5H4.5L2.25 3.75l1.5-1.5L7.5 4.5v1.409l4.26 4.26m-1.745 1.437 1.745-1.437m6.615 8.206L15.75 15.75M4.867 19.125h.008v.008h-.008v-.008Z"/></svg>',
+                database: '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="bf-icon"><path stroke-linecap="round" stroke-linejoin="round" d="M20.25 6.375c0 2.278-3.694 4.125-8.25 4.125S3.75 8.653 3.75 6.375m16.5 0c0-2.278-3.694-4.125-8.25-4.125S3.75 4.097 3.75 6.375m16.5 0v11.25c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125V6.375m16.5 0v3.75m-16.5-3.75v3.75m16.5 0v3.75C20.25 16.153 16.556 18 12 18s-8.25-1.847-8.25-4.125v-3.75m16.5 0c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125"/></svg>',
+                rocket: '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="bf-icon"><path stroke-linecap="round" stroke-linejoin="round" d="M15.59 14.37a6 6 0 0 1-5.84 7.38v-4.8m5.84-2.58a14.98 14.98 0 0 0 6.16-12.12A14.98 14.98 0 0 0 9.631 8.41m5.96 5.96a14.926 14.926 0 0 1-5.841 2.58m-.119-8.54a6 6 0 0 0-7.381 5.84h4.8m2.581-5.84a14.927 14.927 0 0 0-2.58 5.84m2.699 2.7c-.103.021-.207.041-.311.06a15.09 15.09 0 0 1-2.448-2.448 14.9 14.9 0 0 1 .06-.312m-2.24 2.39a4.493 4.493 0 0 0-1.757 4.306 4.493 4.493 0 0 0 4.306-1.758M16.5 9a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0Z"/></svg>',
+                apps: '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="bf-icon"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 16.875h3.375m0 0h3.375m-3.375 0V13.5m0 3.375v3.375M6 10.5h2.25a2.25 2.25 0 0 0 2.25-2.25V6a2.25 2.25 0 0 0-2.25-2.25H6A2.25 2.25 0 0 0 3.75 6v2.25A2.25 2.25 0 0 0 6 10.5Zm0 9.75h2.25A2.25 2.25 0 0 0 10.5 18v-2.25a2.25 2.25 0 0 0-2.25-2.25H6a2.25 2.25 0 0 0-2.25 2.25V18A2.25 2.25 0 0 0 6 20.25Zm9.75-9.75H18a2.25 2.25 0 0 0 2.25-2.25V6A2.25 2.25 0 0 0 18 3.75h-2.25A2.25 2.25 0 0 0 13.5 6v2.25a2.25 2.25 0 0 0 2.25 2.25Z"/></svg>',
+                puzzle: '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="bf-icon"><path stroke-linecap="round" stroke-linejoin="round" d="M14.25 6.087c0-.355.186-.676.401-.959.221-.29.349-.634.349-1.003 0-1.036-1.007-1.875-2.25-1.875s-2.25.84-2.25 1.875c0 .369.128.713.349 1.003.215.283.401.604.401.959v0a.64.64 0 0 1-.657.643 48.39 48.39 0 0 1-4.163-.3c.186 1.613.293 3.25.315 4.907a.656.656 0 0 1-.658.663v0c-.355 0-.676-.186-.959-.401a1.647 1.647 0 0 0-1.003-.349c-1.036 0-1.875 1.007-1.875 2.25s.84 2.25 1.875 2.25c.369 0 .713-.128 1.003-.349.283-.215.604-.401.959-.401v0c.31 0 .555.26.532.57a48.039 48.039 0 0 1-.642 5.056c1.518.19 3.058.309 4.616.354a.64.64 0 0 0 .657-.643v0c0-.355-.186-.676-.401-.959a1.647 1.647 0 0 1-.349-1.003c0-1.035 1.008-1.875 2.25-1.875 1.243 0 2.25.84 2.25 1.875 0 .369-.128.713-.349 1.003-.215.283-.4.604-.4.959v0c0 .333.277.599.61.58a48.1 48.1 0 0 0 5.427-.63 48.05 48.05 0 0 0 .582-4.717.532.532 0 0 0-.533-.57v0c-.355 0-.676.186-.959.401-.29.221-.634.349-1.003.349-1.035 0-1.875-1.007-1.875-2.25s.84-2.25 1.875-2.25c.37 0 .713.128 1.003.349.283.215.604.401.96.401v0a.656.656 0 0 0 .658-.663 48.422 48.422 0 0 0-.37-5.36c-1.886.342-3.81.574-5.766.689a.578.578 0 0 1-.61-.58v0Z"/></svg>',
+                video: '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="bf-icon"><path stroke-linecap="round" stroke-linejoin="round" d="m15.75 10.5 4.72-4.72a.75.75 0 0 1 1.28.53v11.38a.75.75 0 0 1-1.28.53l-4.72-4.72M4.5 18.75h9a2.25 2.25 0 0 0 2.25-2.25v-9a2.25 2.25 0 0 0-2.25-2.25h-9A2.25 2.25 0 0 0 2.25 7.5v9a2.25 2.25 0 0 0 2.25 2.25Z"/></svg>',
+                font: '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="bf-icon"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5M12 17.25h8.25"/></svg>',
             });
-        }
 
-        // Fetch and display Brewfile with syntax highlighting
-        async function loadBrewfile() {
-            const container = document.getElementById('brewfile-content');
-            try {
-                const response = await fetch('https://raw.githubusercontent.com/Sbastien/Brewfile/main/Brewfile');
-                const text = await response.text();
-                container.innerHTML = highlightBrewfile(text);
-            } catch (error) {
-                container.textContent = 'Failed to load Brewfile. View it on GitHub →';
-            }
-        }
+            /**
+             * Escape HTML special characters
+             */
+            const escapeHtml = (text) =>
+                text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 
-        function highlightBrewfile(text) {
-            return text.split('\n').map(line => {
-                if (line.match(/^#\s*[─=]+$/)) return `<span class="comment">${escapeHtml(line)}</span>`;
-                if (line.match(/^#\s+\S/)) return `<span class="section">${escapeHtml(line)}</span>`;
-                const match = line.match(/^(brew|cask|tap)\s+(".*?")(.*?)(\s*#.*)?$/);
-                if (match) return `<span class="keyword">${match[1]}</span> <span class="string">${escapeHtml(match[2])}</span>${escapeHtml(match[3] || '')}<span class="inline-comment">${escapeHtml(match[4] || '')}</span>`;
-                if (line.trim()) return `<span class="comment">${escapeHtml(line)}</span>`;
-                return '';
-            }).join('\n');
-        }
+            /**
+             * Parse and highlight Brewfile content
+             */
+            const highlightBrewfile = (text) => {
+                const lines = text.split('\n');
+                const result = [];
 
-        function escapeHtml(text) {
-            return text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-        }
+                for (let i = 0; i < lines.length; i++) {
+                    const line = lines[i];
+                    if (!line.trim()) continue;
 
-        loadBrewfile();
+                    // Section title with icon
+                    const titleMatch = line.match(/^#\s+(.+)$/);
+                    if (titleMatch && lines[i + 1]?.match(/^#\s*@icon:(\w+)\s*$/)) {
+                        const iconName = lines[i + 1].match(/^#\s*@icon:(\w+)\s*$/)[1];
+                        const icon = ICONS[iconName] ?? '';
+                        result.push(`<span class="bf-section">${icon} ${escapeHtml(titleMatch[1])}</span>`);
+                        i++;
+                        continue;
+                    }
+
+                    // Skip icon annotations
+                    if (line.match(/^#\s*@icon:/)) continue;
+
+                    // Package lines (brew, cask, tap)
+                    const match = line.match(/^(brew|cask|tap)\s+(".*?")(.*?)(\s*#.*)?$/);
+                    if (match) {
+                        const [, keyword, pkg, rest = '', comment = ''] = match;
+                        const isCask = keyword === 'cask';
+                        const keywordClass = isCask ? 'bf-keyword--cask' : 'bf-keyword';
+                        const stringClass = isCask ? 'bf-string--cask' : 'bf-string';
+                        result.push(
+                            `<span class="bf-package">` +
+                            `<span class="${keywordClass}">${keyword}</span> ` +
+                            `<span class="${stringClass}">${escapeHtml(pkg)}</span>` +
+                            `${escapeHtml(rest)}` +
+                            `<span class="bf-comment">${escapeHtml(comment)}</span>` +
+                            `</span>`
+                        );
+                        continue;
+                    }
+
+                    // Skip other comments
+                    if (line.startsWith('#')) continue;
+
+                    // Other content
+                    result.push(`<span class="bf-comment">${escapeHtml(line)}</span>`);
+                }
+
+                return result.join('\n');
+            };
+
+            /**
+             * Update stats from Brewfile content
+             */
+            const updateStats = (text) => {
+                const brews = (text.match(/^brew\s+"/gm) ?? []).length;
+                const casks = (text.match(/^cask\s+"/gm) ?? []).length;
+                const fonts = (text.match(/^cask\s+"font-/gm) ?? []).length;
+
+                document.getElementById('stat-brews').textContent = brews;
+                document.getElementById('stat-casks').textContent = casks - fonts;
+                document.getElementById('stat-fonts').textContent = fonts;
+            };
+
+            /**
+             * Load and display Brewfile content
+             */
+            const loadBrewfile = async () => {
+                const container = document.getElementById('brewfile-content');
+
+                try {
+                    const response = await fetch(BREWFILE_URL);
+                    if (!response.ok) throw new Error('Failed to fetch');
+
+                    const text = await response.text();
+                    container.innerHTML = highlightBrewfile(text);
+                    updateStats(text);
+                } catch {
+                    container.textContent = 'Failed to load Brewfile. View it on GitHub →';
+                }
+            };
+
+            /**
+             * Copy command to clipboard
+             */
+            const handleCopyClick = async (event) => {
+                const btn = event.target.closest('.copy-btn');
+                if (!btn) return;
+
+                const command = btn.parentElement.querySelector('.terminal__command');
+                const text = command?.dataset.command ?? command?.textContent ?? '';
+
+                try {
+                    await navigator.clipboard.writeText(text);
+                    btn.textContent = '🍺 Copied!';
+                    btn.classList.add('copy-btn--copied');
+
+                    setTimeout(() => {
+                        btn.textContent = 'Copy';
+                        btn.classList.remove('copy-btn--copied');
+                    }, COPY_FEEDBACK_DURATION);
+                } catch (err) {
+                    console.error('Failed to copy:', err);
+                }
+            };
+
+            // Initialize
+            document.addEventListener('click', handleCopyClick);
+            loadBrewfile();
+        })();
     </script>
 </body>
 </html>
