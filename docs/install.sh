@@ -81,8 +81,8 @@ setup_homebrew() {
         return 0
     fi
 
-    echo "Installing Homebrew..."
-    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+    NONINTERACTIVE=1 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)" &>/dev/null &
+    spin $! "Installing Homebrew..."
     eval "$(/opt/homebrew/bin/brew shellenv)"
 }
 
@@ -203,8 +203,13 @@ main() {
         exit 0
     fi
 
-    # Installation
-    gum style ""
+    # Setup Homebrew (asks for sudo if needed)
+    if ! command -v brew &>/dev/null && [[ ! -f /opt/homebrew/bin/brew ]]; then
+        gum style ""
+        ui_info "Administrator privileges required"
+        sudo -v
+    fi
+
     setup_homebrew
     ui_success "Homebrew ready"
 
