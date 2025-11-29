@@ -296,77 +296,72 @@
         .packages { margin: 3rem 0; }
         .packages h2 { color: var(--brew-yellow); margin-bottom: 1.5rem; }
 
-        .package-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 1rem;
-        }
-
-        .package-card {
+        .brewfile-container {
             background: var(--brew-dark);
             border: 1px solid #333;
-            border-radius: 8px;
-            padding: 1.25rem;
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            animation: fadeInUp 0.6s ease-out both;
-            position: relative;
+            border-radius: 12px;
             overflow: hidden;
+            animation: fadeInUp 0.6s ease-out both;
+            transition: all 0.3s ease;
         }
 
-        .package-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(251, 176, 64, 0.1), transparent);
-            transition: left 0.5s ease;
+        .brewfile-container:hover {
+            border-color: var(--brew-yellow);
+            box-shadow: 0 0 30px rgba(251, 176, 64, 0.1);
         }
 
-        .package-card:hover::before { left: 100%; }
+        .brewfile-header {
+            background: linear-gradient(180deg, #3a3a4a, #2a2a3a);
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-bottom: 1px solid #333;
+        }
 
-        .package-card:nth-child(1) { animation-delay: 0.1s; }
-        .package-card:nth-child(2) { animation-delay: 0.15s; }
-        .package-card:nth-child(3) { animation-delay: 0.2s; }
-        .package-card:nth-child(4) { animation-delay: 0.25s; }
-        .package-card:nth-child(5) { animation-delay: 0.3s; }
-        .package-card:nth-child(6) { animation-delay: 0.35s; }
-        .package-card:nth-child(7) { animation-delay: 0.4s; }
-        .package-card:nth-child(8) { animation-delay: 0.45s; }
-        .package-card:nth-child(9) { animation-delay: 0.5s; }
-        .package-card:nth-child(10) { animation-delay: 0.55s; }
+        .brewfile-icon { font-size: 1.2rem; }
+
+        .brewfile-title {
+            color: #888;
+            font-size: 0.9rem;
+            flex: 1;
+        }
+
+        .brewfile-link {
+            color: var(--brew-yellow);
+            text-decoration: none;
+            font-size: 0.8rem;
+            opacity: 0.8;
+            transition: opacity 0.2s;
+        }
+
+        .brewfile-link:hover { opacity: 1; }
+
+        .brewfile-content {
+            padding: 1.5rem;
+            margin: 0;
+            max-height: 500px;
+            overflow-y: auto;
+            font-size: 0.85rem;
+            line-height: 1.6;
+            color: #ccc;
+        }
+
+        .brewfile-content::-webkit-scrollbar { width: 8px; }
+        .brewfile-content::-webkit-scrollbar-track { background: var(--brew-darker); }
+        .brewfile-content::-webkit-scrollbar-thumb { background: #444; border-radius: 4px; }
+        .brewfile-content::-webkit-scrollbar-thumb:hover { background: var(--brew-yellow); }
+
+        .brewfile-content .comment { color: #666; }
+        .brewfile-content .section { color: var(--brew-yellow); font-weight: bold; }
+        .brewfile-content .keyword { color: var(--brew-green); }
+        .brewfile-content .string { color: #81D4FA; }
+        .brewfile-content .inline-comment { color: #666; }
 
         @keyframes fadeInUp {
             from { opacity: 0; transform: translateY(30px); }
             to { opacity: 1; transform: translateY(0); }
         }
-
-        .package-card:hover {
-            border-color: var(--brew-yellow);
-            transform: translateY(-8px) scale(1.02);
-            box-shadow: 0 15px 40px rgba(251, 176, 64, 0.2);
-        }
-
-        .package-card h3 {
-            color: var(--brew-yellow);
-            font-size: 1rem;
-            margin-bottom: 0.5rem;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            transition: text-shadow 0.3s ease;
-        }
-
-        .package-card:hover h3 { text-shadow: 0 0 15px var(--brew-yellow); }
-
-        .package-card p {
-            color: #888;
-            font-size: 0.85rem;
-            transition: color 0.3s ease;
-        }
-
-        .package-card:hover p { color: #aaa; }
 
         .stats {
             display: flex;
@@ -444,7 +439,6 @@
             h1 { font-size: 2.5rem; }
             .logo { font-size: 4rem; }
             header { padding: 2rem 0; }
-            .package-grid { grid-template-columns: 1fr; }
             .stats { gap: 2rem; }
             .stat-value { font-size: 2rem; }
         }
@@ -530,17 +524,13 @@
 
         <section class="packages">
             <h2>📦 What's Included</h2>
-            <div class="package-grid">
-                <div class="package-card"><h3>🖥️ Terminal & Shell</h3><p>zsh, tmux, neovim, starship, atuin, chezmoi</p></div>
-                <div class="package-card"><h3>⚡ Modern CLI</h3><p>bat, eza, fd, ripgrep, fzf, btop, dust</p></div>
-                <div class="package-card"><h3>🔀 Git & VCS</h3><p>git, delta, lazygit, gh, git-lfs, gitleaks</p></div>
-                <div class="package-card"><h3>🔧 Version Managers</h3><p>mise, rustup</p></div>
-                <div class="package-card"><h3>🔒 Security</h3><p>gnupg, git-crypt, age, sops, lynis, trivy</p></div>
-                <div class="package-card"><h3>🗄️ Databases</h3><p>sqlite, redis, postgresql</p></div>
-                <div class="package-card"><h3>🚀 Productivity</h3><p>Raycast, Aerospace, Notion, Obsidian, 1Password</p></div>
-                <div class="package-card"><h3>💻 Development</h3><p>VS Code, Docker, Bruno, iTerm2, Warp</p></div>
-                <div class="package-card"><h3>🎬 Media</h3><p>ffmpeg, imagemagick, yt-dlp, VLC, Figma</p></div>
-                <div class="package-card"><h3>🔤 Fonts</h3><p>Fira Code, JetBrains Mono, Hack, Meslo (Nerd)</p></div>
+            <div class="brewfile-container">
+                <div class="brewfile-header">
+                    <span class="brewfile-icon">🍺</span>
+                    <span class="brewfile-title">Brewfile</span>
+                    <a href="https://github.com/Sbastien/Brewfile/blob/main/Brewfile" class="brewfile-link" target="_blank">View on GitHub →</a>
+                </div>
+                <pre class="brewfile-content" id="brewfile-content">Loading...</pre>
             </div>
         </section>
 
@@ -564,6 +554,35 @@
                 }, 2000);
             });
         }
+
+        // Fetch and display Brewfile with syntax highlighting
+        async function loadBrewfile() {
+            const container = document.getElementById('brewfile-content');
+            try {
+                const response = await fetch('https://raw.githubusercontent.com/Sbastien/Brewfile/main/Brewfile');
+                const text = await response.text();
+                container.innerHTML = highlightBrewfile(text);
+            } catch (error) {
+                container.textContent = 'Failed to load Brewfile. View it on GitHub →';
+            }
+        }
+
+        function highlightBrewfile(text) {
+            return text.split('\n').map(line => {
+                if (line.match(/^#\s*[─=]+$/)) return `<span class="comment">${escapeHtml(line)}</span>`;
+                if (line.match(/^#\s+\S/)) return `<span class="section">${escapeHtml(line)}</span>`;
+                const match = line.match(/^(brew|cask|tap)\s+(".*?")(.*?)(\s*#.*)?$/);
+                if (match) return `<span class="keyword">${match[1]}</span> <span class="string">${escapeHtml(match[2])}</span>${escapeHtml(match[3] || '')}<span class="inline-comment">${escapeHtml(match[4] || '')}</span>`;
+                if (line.trim()) return `<span class="comment">${escapeHtml(line)}</span>`;
+                return '';
+            }).join('\n');
+        }
+
+        function escapeHtml(text) {
+            return text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+        }
+
+        loadBrewfile();
     </script>
 </body>
 </html>
