@@ -119,10 +119,10 @@ cask "warp"                 # Modern terminal
 # Development Apps
 # ============================================================================
 cask "visual-studio-code"   # Code editor
-cask "docker"               # Containers
+cask "docker-desktop"       # Containers
 brew "lazydocker"           # Docker TUI
 cask "bruno"                # API client
-cask "zen-browser"          # Privacy browser
+cask "zen"                  # Privacy browser
 cask "tableplus"            # Database GUI
 
 # ============================================================================

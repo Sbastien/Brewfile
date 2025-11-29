@@ -7,10 +7,12 @@ set -e
 # =============================================================================
 
 # -----------------------------------------------------------------------------
-# Configuration
+# Configuration (customize these for your fork)
 # -----------------------------------------------------------------------------
 
-readonly REPO_URL="https://raw.githubusercontent.com/Sbastien/Brewfile/main/Brewfile"
+readonly GITHUB_USER="Sbastien"
+
+readonly REPO_URL="https://raw.githubusercontent.com/${GITHUB_USER}/Brewfile/main/Brewfile"
 readonly BREWFILE_PATH="$HOME/.Brewfile"
 
 readonly GUM_VERSION="0.14.5"
@@ -128,9 +130,9 @@ ui_info() {
 # Display footer with credits
 ui_footer() {
     gum style "
-  Made with $(gum style --foreground "$COLOR_HEART" '♥') and 🍺 by $(gum style --foreground "$COLOR_BREW" --bold 'Sbastien')
+  Made with $(gum style --foreground "$COLOR_HEART" '♥') and 🍺 by $(gum style --foreground "$COLOR_BREW" --bold "$GITHUB_USER")
 
-  $(gum style --faint 'github.com/Sbastien/Brewfile')
+  $(gum style --faint "github.com/${GITHUB_USER}/Brewfile")
 "
 }
 
@@ -214,6 +216,14 @@ main() {
 
   🍺 $(gum style --foreground "$COLOR_SUCCESS" --bold 'Cheers! Your dev environment is ready.')
 "
+
+    if gum confirm "  Configure your shell with dotfiles?"; then
+        gum style ""
+        gum spin --spinner dot --title "  Installing dotfiles..." -- \
+            chezmoi init --apply "$GITHUB_USER"
+        ui_success "Dotfiles applied"
+    fi
+
     ui_footer
 }
 
