@@ -222,6 +222,12 @@ main() {
   🍺 $(gum style --foreground "$COLOR_SUCCESS" --bold 'Cheers! Your dev environment is ready.')
 "
 
+    if gum confirm "  Run 'brew cleanup' to remove old downloads?"; then
+        gum style ""
+        brew cleanup --prune=all -q &
+        spin $! "Cleaning up..."
+    fi
+
     if gum confirm "  Configure your shell with dotfiles?"; then
         gum style ""
         chezmoi init --apply "$GITHUB_USER" &>/dev/null &
