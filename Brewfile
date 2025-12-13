@@ -71,6 +71,8 @@ brew "direnv"               # Per-directory env vars
 brew "watchman"             # File watcher
 brew "shellcheck"           # Shell script linter
 brew "shfmt"                # Shell script formatter
+brew "gum"                  # Elegant shell scripts
+brew "mas"                  # Mac App Store CLI
 brew "pre-commit"           # Git hooks manager
 brew "act"                  # Run GitHub Actions locally
 
@@ -87,7 +89,8 @@ cask "notion"               # Notes & docs
 cask "nikitabobko/tap/aerospace"    # Tiling window manager
 cask "hiddenbar"            # Menu bar manager
 cask "slack"                # Team chat
-cask "1password"            # Password manager
+cask "bitwarden"            # Password manager
+cask "mattermost"           # Team chat (open-source)
 
 # Development Apps
 # @icon:apps
@@ -99,6 +102,8 @@ brew "lazydocker"           # Docker TUI
 cask "bruno"                # API client
 cask "zen"                  # Privacy browser
 cask "tableplus"            # Database GUI
+cask "claude"               # Claude AI desktop app
+cask "claude-code"          # Claude AI CLI
 
 # Utility Apps
 # @icon:puzzle
@@ -108,6 +113,8 @@ cask "utm"                  # Virtual machines
 cask "the-unarchiver"       # Archive extraction
 cask "appcleaner"           # App uninstaller
 cask "stats"                # System monitor menubar
+cask "kap"                  # Screen recorder GIF/MP4
+cask "scroll-reverser"      # Reverse scroll per device
 
 # Media & Creative
 # @icon:video
